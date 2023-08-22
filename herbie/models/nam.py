@@ -1,5 +1,7 @@
 ## Added by Brian Blaylock
 ## August 10, 2022
+## Updated by William Nauroy
+## August 22, 2023
 
 """
 A Herbie template for the NAM model.
@@ -20,10 +22,12 @@ class nam:
             "hawaiinest.hiresf": "Hawaii 6 km",
             "priconest.hiresf": "Puerto Rico 3 km",
             "afwaca": "Central America/Caribbean",
+            "awip12": "CONUS 12-km; full complement of pressure level fields and some surface-based fields",
         }
         self.SOURCES = {
             "aws": f"https://noaa-nam-pds.s3.amazonaws.com/nam.{self.date:%Y%m%d}/nam.t{self.date:%H}z.{self.product}{self.fxx:02d}.tm00.grib2",
             "nomads": f"https://nomads.ncep.noaa.gov/pub/data/nccf/com/nam/prod/nam.{self.date:%Y%m%d}/nam.t{self.date:%H}z.{self.product}{self.fxx:02d}.tm00.grib2",
+            "ftpprd": f"https://ftp.ncep.noaa.gov/data/nccf/com/nam/prod/nam.{self.date:%Y%m%d}/nam.t{self.date:%H}z.{self.product}{self.fxx:02d}.tm00.grib2",
         }
         self.EXPECT_IDX_FILE = "remote"
         self.LOCALFILE = f"{self.get_remoteFileName}"
