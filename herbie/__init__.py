@@ -25,6 +25,15 @@
 import os
 from pathlib import Path
 import toml
+import logging
+# logging.basicConfig(
+#     level=os.environ.get("LOGLEVEL", "INFO"),
+# )
+logging.basicConfig(
+    level=logging.INFO,  # Niveau minimal de journalisation (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+
 
 __author__ = "Brian K. Blaylock"
 __meet_Herbie__ = "https://en.wikipedia.org/wiki/Herbie"

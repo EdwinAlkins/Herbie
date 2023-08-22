@@ -290,20 +290,28 @@ class Herbie:
         if verbose:
             # ANSI colors added for style points
             if any([self.grib is not None, self.idx is not None]):
-                print(
-                    f"✅ Found",
-                    f"┊ model={self.model}",
-                    f"┊ {ANSI.italic}product={self.product}{ANSI.reset}",
-                    f"┊ {ANSI.green}{self.date:%Y-%b-%d %H:%M UTC}{ANSI.bright_green} F{self.fxx:02d}{ANSI.reset}",
-                    f"┊ {ANSI.orange}{ANSI.italic}GRIB2 @ {self.grib_source}{ANSI.reset}",
-                    f"┊ {ANSI.orange}{ANSI.italic}IDX @ {self.idx_source}{ANSI.reset}",
+                log.info(
+                    "".join(
+                        (
+                            "✅ Found",
+                            f"┊ model={self.model}",
+                            f"┊ {ANSI.italic}product={self.product}{ANSI.reset}",
+                            f"┊ {ANSI.green}{self.date:%Y-%b-%d %H:%M UTC}{ANSI.bright_green} F{self.fxx:02d}{ANSI.reset}",
+                            f"┊ {ANSI.orange}{ANSI.italic}GRIB2 @ {self.grib_source}{ANSI.reset}",
+                            f"┊ {ANSI.orange}{ANSI.italic}IDX @ {self.idx_source}{ANSI.reset}",
+                        )
+                    )
                 )
             else:
-                print(
-                    f"💔 Did not find",
-                    f"┊ model={self.model}",
-                    f"┊ {ANSI.italic}product={self.product}{ANSI.reset}",
-                    f"┊ {ANSI.green}{self.date:%Y-%b-%d %H:%M UTC}{ANSI.bright_green} F{self.fxx:02d}{ANSI.reset}",
+                log.warning(
+                    "".join(
+                        (
+                            "💔 Did not find",
+                            f"┊ model={self.model}",
+                            f"┊ {ANSI.italic}product={self.product}{ANSI.reset}",
+                            f"┊ {ANSI.green}{self.date:%Y-%b-%d %H:%M UTC}{ANSI.bright_green} F{self.fxx:02d}{ANSI.reset}",
+                        )
+                    )
                 )
 
     def __repr__(self):
@@ -373,7 +381,7 @@ class Herbie:
         try:
             requests.head("https://pando-rgw01.chpc.utah.edu/")
         except:
-            print("🤝🏻⛔ Bad handshake with pando? Am I able to move on?")
+            log.warning("🤝🏻⛔ Bad handshake with pando? Am I able to move on?")
             pass
 
     def _check_grib(self, url, min_content_length=10):
@@ -796,10 +804,10 @@ class Herbie:
         if searchString not in [None, ":"]:
             logic = df.search_this.str.contains(searchString)
             if logic.sum() == 0:
-                print(
+                log.warning(
                     f"No GRIB messages found. There might be something wrong with {searchString=}"
                 )
-                print(_searchString_help(kind=self.IDX_STYLE))
+                log.info(_searchString_help(kind=self.IDX_STYLE))
             df = df.loc[logic]
         return df
 
@@ -924,7 +932,7 @@ class Herbie:
                 else:
                     # ...all other messages are appended to the subset file.
                     curl = f'''curl -s --range {range} "{grib_source}" >> "{outFile}"'''
-                print(curl)
+                log.debug(curl)
                 os.system(curl)
 
             if verbose:
@@ -967,7 +975,7 @@ class Herbie:
             # Search for the grib files on the remote archives again
             self.grib, self.grib_source = self.find_grib(overwrite=True)
             self.idx, self.idx_source = self.find_idx()
-            print(f"Overwrite local file with file from [{self.grib_source}]")
+            log.warning(f"Overwrite local file with file from [{self.grib_source}]")
 
         # Check that data exists
         if self.grib is None:
@@ -993,7 +1001,7 @@ class Herbie:
         # Create directory if it doesn't exist
         if not outFile.parent.is_dir():
             outFile.parent.mkdir(parents=True, exist_ok=True)
-            print(f"👨🏻‍🏭 Created directory: [{outFile.parent}]")
+            log.info(f"👨🏻‍🏭 Created directory: [{outFile.parent}]")
 
         # ===============
         # Do the Download
