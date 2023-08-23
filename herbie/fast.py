@@ -1,5 +1,7 @@
 ## Brian Blaylock
 ## May 3, 2021
+## Updated by William Nauroy
+## August 23, 2023
 
 """
 ============
@@ -7,6 +9,7 @@ Herbie Tools
 ============
 """
 from datetime import datetime, timedelta
+from itertools import product
 
 import logging
 import cartopy.crs as ccrs
@@ -90,7 +93,7 @@ def Herbie_latest(n=6, freq="1H", **kwargs):
 
 
 class FastHerbie:
-    def __init__(self, DATES, fxx=[0], *, max_threads=50, **kwargs):
+    def __init__(self, DATES, fxx=[0], members=None, *, max_threads=50, **kwargs):
         """Create many Herbie objects with methods to download or read with xarray.
 
         Uses multithreading.
@@ -103,6 +106,9 @@ class FastHerbie:
         ----------
         DATES : pandas-parsable datetime string or list of datetimes
         fxx : int or list of forecast lead times
+        members : list of members
+            If you want to loop through members, provide a list of members.
+            If ``members`` is set, ``member`` parameter will be ignored.
         max_threads : int
             Maximum number of threads to use.
         kwargs :
@@ -122,19 +128,23 @@ class FastHerbie:
         self.fxx = _validate_fxx(fxx)
 
         kwargs.setdefault("verbose", False)
+        if members is None:
+            # If members is None, then we will loop through the member parameter
+            members = [kwargs.get("member", None)]
+            # Remove member from kwargs to avoid multiple values for keyword argument member
+            kwargs.pop("member", None)
 
         ################
         # Multithreading
-        self.tasks = len(DATES) * len(fxx)
+        self.tasks = len(DATES) * len(fxx) * len(members)
         threads = min(self.tasks, max_threads)
         log.info(f"🧵 Working on {self.tasks} tasks with {threads} threads.")
 
         self.objects = []
         with ThreadPoolExecutor(threads) as exe:
             futures = [
-                exe.submit(Herbie, date=DATE, fxx=f, **kwargs)
-                for DATE in DATES
-                for f in fxx
+                exe.submit(Herbie, date=DATE, fxx=f, member=member, **kwargs)
+                for DATE, f, member in product(DATES, fxx, members)
             ]
 
             # Return list of Herbie objects in order completed

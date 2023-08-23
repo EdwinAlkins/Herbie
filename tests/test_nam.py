@@ -7,7 +7,7 @@ Tests for downloading NAM model
 
 from datetime import datetime, timedelta
 
-from herbie import Herbie
+from herbie import Herbie, FastHerbie
 
 today = datetime.utcnow().replace(
     hour=0, minute=0, second=0, microsecond=0
@@ -34,6 +34,7 @@ def test_nam():
     H.xarray(":PRMSL:", remove_grib=False)
     assert H.get_localFilePath(":PRMSL:").exists()
 
+
 def test_nam_ftpprd():
     H = Herbie(
         today,
@@ -51,3 +52,15 @@ def test_nam_ftpprd():
 
     H.xarray(":PRMSL:", remove_grib=False)
     assert H.get_localFilePath(":PRMSL:").exists()
+
+
+def test_nam_fastherbie():
+    FH = FastHerbie(
+        [today],
+        priority="aws",
+        product="awip12",
+        model="nam",
+        save_dir=save_dir,
+    )
+
+    assert FH.file_exists, "GEFS grib2 file not found"
