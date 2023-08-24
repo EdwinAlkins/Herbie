@@ -100,7 +100,8 @@ class FastHerbie:
 
         .. note::
             Currently, Herbie objects looped by run datetime (date)
-            and forecast lead time (fxx).
+            and forecast lead time (fxx)
+            and loops through members (if provided) or use once `member`.
 
         Parameters
         ----------
