@@ -80,6 +80,7 @@ class gefs:
         self.SOURCES = {
             "aws": f"https://noaa-gefs-pds.s3.amazonaws.com/{filepath}",
             "nomads": f"https://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/{filepath}",
+            "ftpprd": f"https://ftp.ncep.noaa.gov/data/nccf/com/gens/prod/{filepath}",
         }
 
         self.IDX_SUFFIX = [".idx", ".grb2.idx", ".grib2.idx"]
