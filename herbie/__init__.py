@@ -96,6 +96,8 @@ fxx = 0
 save_dir = "{_save_dir}"
 overwrite = false
 verbose = true
+timeout = 60
+retry = 3
 """
 
 ########################################################################

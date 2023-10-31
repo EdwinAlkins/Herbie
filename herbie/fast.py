@@ -24,6 +24,9 @@ from . import Path
 # Multithreading :)
 from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import as_completed, wait
+# import multiprocessing
+# from functools import partial
+# from multiprocessing.pool import ThreadPool, AsyncResult # Utilisez ThreadPool ici
 
 log = logging.getLogger(__name__)
 
@@ -141,6 +144,7 @@ class FastHerbie:
         threads = min(self.tasks, max_threads)
         log.info(f"🧵 Working on {self.tasks} tasks with {threads} threads.")
 
+        count = 0
         self.objects = []
         with ThreadPoolExecutor(threads) as exe:
             futures = [
@@ -154,6 +158,22 @@ class FastHerbie:
                     self.objects.append(future.result())
                 else:
                     log.error(f"Exception has occured : {future.exception()}")
+                count += 1
+                if count % 100 == 0:
+                    log.info(f"Completed {count}/{self.tasks} tasks.")
+        # with ThreadPool(threads) as exe:
+        #     futures: list[AsyncResult] = []
+        #     for DATE in DATES:
+        #         for f in fxx:
+        #             futures.append(exe.apply_async(partial(Herbie, date=DATE, fxx=f, **kwargs)))
+
+        #     # Récupérez les résultats des tâches asynchrones
+        #     for future in futures:
+        #         result = future.get()
+        #         if result is not None:
+        #             self.objects.append(result)
+        #         else:
+        #             log.error("Une erreur est survenue lors de la création de l'objet Herbie.")
 
         log.info(f"Number of Herbie objects: {len(self.objects)}")
 
@@ -229,6 +249,7 @@ class FastHerbie:
         threads = min(self.tasks, max_threads)
         log.info(f"🧵 Working on {self.tasks} tasks with {threads} threads.")
 
+        count = 0
         outFiles = []
         with ThreadPoolExecutor(threads) as exe:
             futures = [
@@ -242,6 +263,21 @@ class FastHerbie:
                     outFiles.append(future.result())
                 else:
                     log.error(f"Exception has occured : {future.exception()}")
+                count += 1
+                if count % 100 == 0:
+                    log.info(f"Completed {count}/{self.tasks} tasks.")
+        # with ThreadPool(threads) as exe:
+        #     futures: list[AsyncResult] = []
+        #     for H in self.file_exists:
+        #         futures.append(exe.apply_async(partial(H.download, searchString, **download_kwargs)))
+
+        #     # Récupérez les résultats des tâches asynchrones
+        #     for future in futures:
+        #         result = future.get()
+        #         if result is not None:
+        #             outFiles.append(result)
+        #         else:
+        #             log.error(f"Exception has occured : {future.exception()}")
 
         return outFiles
 

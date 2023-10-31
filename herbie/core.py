@@ -208,6 +208,8 @@ class Herbie:
         save_dir=config["default"].get("save_dir"),
         overwrite=config["default"].get("overwrite", False),
         verbose=config["default"].get("verbose", True),
+        timeout=config["default"].get("timeout", 60),
+        retry=config["default"].get("retry", 3),
         **kwargs,
     ):
         """
@@ -238,6 +240,8 @@ class Herbie:
         self.save_dir = Path(save_dir).expand()
         self.overwrite = overwrite
         self.verbose = verbose
+        self.timeout = timeout
+        self.retry = retry
 
         # Some model templates may require kwargs not listed (e.g., `nest=`, `member=`).
         for key, value in kwargs.items():
@@ -926,14 +930,30 @@ class Herbie:
                             f"  {row.grib_message:<3g} {ANSI.orange}{row.search_this}{ANSI.reset}"
                         )
 
+                # if i == 0:
+                #     # If we are working on the first item, overwrite the existing file...
+                #     curl = f"curl -s --connect-timeout {self.timeout} --retry {self.retry} --range {range} {grib_source} > {outFile}"
+                # else:
+                #     # ...all other messages are appended to the subset file.
+                #     curl = f"curl -s --connect-timeout {self.timeout} --retry {self.retry} --range {range} {grib_source} >> {outFile}"
+                # log.debug(curl)
+                # os.system(curl)
                 if i == 0:
                     # If we are working on the first item, overwrite the existing file...
-                    curl = f'''curl -s --range {range} "{grib_source}" > "{outFile}"'''
+                    # curl = f"curl -s --range {range} {grib_source} > {outFile}"
+                    # curl = f"curl --connect-timeout {5} --retry {5} --range {range} {grib_source} > {outFile}"
+                    append_mode = "w"
                 else:
                     # ...all other messages are appended to the subset file.
-                    curl = f'''curl -s --range {range} "{grib_source}" >> "{outFile}"'''
-                log.debug(curl)
-                os.system(curl)
+                    # curl = f"curl --connect-timeout {5} --retry {5} --range {range} {grib_source} >> {outFile}"
+                    append_mode = "a"
+                # os.system(curl)
+                curl_command = ["curl", "--connect-timeout", {self.timeout}, "--retry", {self.retry}, "--range", range, grib_source]
+                with open(outFile, append_mode) as outfile:
+                    try:
+                        subprocess.check_call(curl_command, stdout=outfile, stderr=subprocess.STDOUT)
+                    except subprocess.CalledProcessError as e:
+                        logging.error(f"Le téléchargement a échoué. Code de sortie : {e.returncode}")
 
             if verbose:
                 print(f"💾 Saved the subset to {outFile}")
