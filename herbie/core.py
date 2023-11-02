@@ -967,7 +967,7 @@ class Herbie:
                 except requests.exceptions.RequestException as e:
                     log.error(f"Le téléchargement a échoué. Exception : {e}")
                 except Exception as e:
-                    v.error(f"Le téléchargement a échoué. Traceback : {e}")
+                    log.error(f"Le téléchargement a échoué. Traceback : {e}")
 
             if verbose:
                 print(f"💾 Saved the subset to {outFile}")
