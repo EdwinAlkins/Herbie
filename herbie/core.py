@@ -948,7 +948,7 @@ class Herbie:
                     # curl = f"curl --connect-timeout {5} --retry {5} --range {range} {grib_source} >> {outFile}"
                     append_mode = "a"
                 # os.system(curl)
-                curl_command = ["curl", "--connect-timeout", {self.timeout}, "--retry", {self.retry}, "--range", range, grib_source]
+                curl_command = ["curl", "--connect-timeout", self.timeout, "--retry", self.retry, "--range", range, grib_source]
                 with open(outFile, append_mode) as outfile:
                     try:
                         subprocess.check_call(curl_command, stdout=outfile, stderr=subprocess.STDOUT)
