@@ -948,12 +948,26 @@ class Herbie:
                     # curl = f"curl --connect-timeout {5} --retry {5} --range {range} {grib_source} >> {outFile}"
                     append_mode = "a"
                 # os.system(curl)
-                curl_command = ["curl", "--connect-timeout", self.timeout, "--retry", self.retry, "--range", range, grib_source]
-                with open(outFile, append_mode) as outfile:
-                    try:
-                        subprocess.check_call(curl_command, stdout=outfile, stderr=subprocess.STDOUT)
-                    except subprocess.CalledProcessError as e:
-                        logging.error(f"Le téléchargement a échoué. Code de sortie : {e.returncode}")
+                # curl_command = ["curl", "--connect-timeout", self.timeout, "--retry", self.retry , "--range", range, grib_source]
+                # with open(outFile, append_mode) as outfile:
+                #     try:
+                #         subprocess.check_call(curl_command, stdout=outfile, stderr=subprocess.STDOUT)
+                #     except subprocess.CalledProcessError as e:
+                #         log.error(f"Le téléchargement a échoué. Code de sortie : {e.returncode}")
+                headers = {
+                    'Range': f'bytes={range}'  # Utilisation de l'en-tête Range pour spécifier la plage de téléchargement
+                }
+                try:
+                    response = requests.get(grib_source, headers=headers, timeout=self.timeout)
+                    if response.status_code in [200, 206]:
+                        with open(outFile, append_mode+"b") as outfile:
+                            outfile.write(response.content)
+                    else:
+                        log.error(f"Le téléchargement a échoué avec le code de statut : {response.status_code}")
+                except requests.exceptions.RequestException as e:
+                    log.error(f"Le téléchargement a échoué. Exception : {e}")
+                except Exception as e:
+                    v.error(f"Le téléchargement a échoué. Traceback : {e}")
 
             if verbose:
                 print(f"💾 Saved the subset to {outFile}")
