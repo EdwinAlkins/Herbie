@@ -210,6 +210,7 @@ class Herbie:
         verbose=config["default"].get("verbose", True),
         timeout=config["default"].get("timeout", 60),
         retry=config["default"].get("retry", 3),
+        member=None,
         **kwargs,
     ):
         """
@@ -235,6 +236,7 @@ class Herbie:
 
         self.model = model.lower()
         self.product = product
+        self.member = member
 
         self.priority = priority
         self.save_dir = Path(save_dir).expand()

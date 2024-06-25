@@ -130,6 +130,7 @@ class FastHerbie:
         """
         self.DATES = _validate_DATES(DATES)
         self.fxx = _validate_fxx(fxx)
+        self.members = members
 
         kwargs.setdefault("verbose", False)
         if members is None:
