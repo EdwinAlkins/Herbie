@@ -1,9 +1,10 @@
 ## Added by Brian Blaylock
 ## July 28, 2021
-__all__ = ["navgem"]
 
 
-class navgem:
+class navgem_nomads:
+    """NAVGEM on NOMADS."""
+
     def template(self):
         self.DESCRIPTION = "Navy Global Environment Model"
         self.DETAILS = {
@@ -18,22 +19,38 @@ class navgem:
         self.LOCALFILE = f"{self.get_remoteFileName}"
 
 
-# ! DOES NOT WORK
 class navgem_godae:
-    """Not great implementation, just playing around..."""
+    """
+    NAVGEM and NOGAPS on GODAE.
+
+    Not great implementation.
+
+    TODO: Study the file naming convention
+    https://usgodae.org/docs/layout/mdllayout.pns.html
+
+    For example:
+    https://usgodae.org/ftp/outgoing/fnmoc/models/navgem_0.5/2023/2023021312/US058GMET-GR1mdl.0018_0056_00000F0RL2023021312_0105_000020-000000air_temp
+
+    https://usgodae.org/ftp/outgoing/fnmoc/models/nogaps    /2004/2004010400/US058GMET-GR1mdl.0058_0240_00000F0RL2004010400_0100_000100-000000air_temp
+    https://usgodae.org/ftp/outgoing/fnmoc/models/nogaps    /2009/2009033012/US058GMET-GR1mdl.0058_0240_00000F0RL2009033012_0105_000100-000000wnd_ucmp
+    """
 
     def template(self):
         self.DESCRIPTION = "Navy Global Environment Model"
         self.DETAILS = {
             "godae": "https://usgodae.org/",
+            "filename_description": "https://usgodae.org/docs/layout/mdllayout.pns.html",
         }
         self.PRODUCTS = {
             "GMET": "",
             "GLND": "",
             "GCOM": "",
         }
+
+        # Please review https://usgodae.org/docs/layout/mdllayout.pns.html
+        # RL = Realtime https://usgodae.org/docs/layout/pn_rutnime_tbl.pns.html
         self.SOURCES = {
-            "g1": "https://usgodae.org/ftp/outgoing/fnmoc/models/navgem_0.5/2022/2022010306/US058GMET-GR1mdl.0018_0056_00600F0OF2022010306_0100_003500-000000air_temp",
-            "godae": f"https://usgodae.org/ftp/outgoing/fnmoc/models/navgem_0.5/{self.date:%Y/%Y%m%d%H}/US058{self.product}-GR1mdl.0018_0056_{self.fxx:03d}00F0OF{self.date:%Y%m%d%H}_{self.level}{self.variable}",
+            "navgem": f"https://usgodae.org/ftp/outgoing/fnmoc/models/navgem_0.5/{self.date:%Y/%Y%m%d%H}/US058{self.product}-GR1mdl.0018_0056_{self.fxx:03d}00F0RL{self.date:%Y%m%d%H}_{self.level}{self.variable}",
+            "nogaps": f"https://usgodae.org/ftp/outgoing/fnmoc/models/nogaps/{self.date:%Y/%Y%m%d%H}/US058{self.product}-GR1mdl.0058_0240_{self.fxx:03d}00F0RL{self.date:%Y%m%d%H}_{self.level}{self.variable}",
         }
         self.LOCALFILE = f"{self.get_remoteFileName}"

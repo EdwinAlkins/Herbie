@@ -3,13 +3,11 @@
 ## Updated by William Nauroy
 ## August 23, 2023
 
-"""
-Tests for downloading GFS model
-"""
+"""Tests for downloading GEFS model."""
 
-from herbie import Herbie, FastHerbie
+from herbie import Herbie, FastHerbie, config
 
-save_dir = "$TMPDIR/Herbie-Tests/"
+save_dir = config["default"]["save_dir"] / "Herbie-Tests-Data/"
 
 
 def test_gefs():
@@ -19,6 +17,7 @@ def test_gefs():
         fxx=12,
         member="mean",
         save_dir=save_dir,
+        overwrite=True,
     )
 
     assert H.grib, "GEFS grib2 file not found"
@@ -33,6 +32,7 @@ def test_gefs_reforecast():
         member=0,
         variable_level="tmp_2m",
         save_dir=save_dir,
+        overwrite=True,
     )
 
     assert H.grib, "GEFS grib2 file not found"

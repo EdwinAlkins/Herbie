@@ -58,7 +58,7 @@ class gefs:
 
         valid_members = {
             "atmos.5": [f"p{i:02d}" for i in range(1, 31)] + ["c00", "spr", "avg"],
-            "atmos.5b": [f"p{i:02d}" for i in range(1, 31)],
+            "atmos.5b": [f"p{i:02d}" for i in range(1, 31)] + ["c00"],
             "atmos.25": [f"p{i:02d}" for i in range(1, 31)] + ["c00", "spr", "avg"],
             "wave": [f"p{i:02d}" for i in range(1, 31)] + ["spread", "mean", "prob"],
             "chem.5": None,
@@ -81,6 +81,8 @@ class gefs:
             "aws": f"https://noaa-gefs-pds.s3.amazonaws.com/{filepath}",
             "nomads": f"https://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/{filepath}",
             "ftpprd": f"https://ftp.ncep.noaa.gov/data/nccf/com/gens/prod/{filepath}",
+            "google": f"https://storage.googleapis.com/gfs-ensemble-forecast-system/{filepath}",
+            "azure": f"https://noaagefs.blob.core.windows.net/gefs/{filepath}",
         }
 
         self.IDX_SUFFIX = [".idx", ".grb2.idx", ".grib2.idx"]
@@ -88,7 +90,7 @@ class gefs:
 
 
 class gefs_reforecast:
-    """Template for GEFS Reforecast data
+    """Template for GEFS Reforecast data.
 
     These grib files are organized different from other model types.
     The files are grouped into variables and clumped by forecast range.
@@ -96,7 +98,7 @@ class gefs_reforecast:
     a file has one variable for many lead times. This changes the way
     a user would use Herbie to access GEFS data. A user will need to supply
     the "variable". For getting specific grib messages, you will use the
-    "searchString" argument to key in on the variable of interest. However,
+    "search" argument to key in on the variable of interest. However,
     you will still need to give a value for "fxx" to tell Herbie which
     directory to look for. Yeah, it's a little different paradigm for Herbie,
     but we can work with it.
