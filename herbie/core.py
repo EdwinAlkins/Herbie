@@ -971,11 +971,13 @@ class Herbie:
                     # curl = f"curl -s --range {range} {grib_source} > {outFile}"
                     # curl = f"curl --connect-timeout {5} --retry {5} --range {range} {grib_source} > {outFile}"
                 # ==== pr
-                    append_mode = "w"
+                    # append_mode = "w"
+                    append_mode = ">"
                 else:
                     # ...all other messages are appended to the subset file.
                     # curl = f"curl --connect-timeout {5} --retry {5} --range {range} {grib_source} >> {outFile}"
-                    append_mode = "a"
+                    # append_mode = "a"
+                    append_mode = ">>"
                 # os.system(curl)
                 # curl_command = ["curl", "--connect-timeout", self.timeout, "--retry", self.retry , "--range", range, grib_source]
                 # with open(outFile, append_mode) as outfile:
@@ -987,13 +989,23 @@ class Herbie:
                     'Range': f'bytes={range}'  # Utilisation de l'en-tête Range pour spécifier la plage de téléchargement
                 }
                 try:
-                    response = requests.get(grib_source, headers=headers, timeout=self.timeout)
-                    if response.status_code in [200, 206]:
-                        with open(outFile, append_mode+"b") as outfile:
-                            outfile.write(response.content)
+                    # response = requests.get(grib_source, headers=headers, timeout=self.timeout)
+                    # if response.status_code in [200, 206]:
+                    #     with open(outFile, append_mode+"b") as outfile:
+                    #         outfile.write(response.content)
+                    # else:
+                    #     log.error(f"Le téléchargement a échoué avec le code de statut : {response.status_code}")
+                    curl_command = ["curl", "--connect-timeout", self.timeout, "--retry", self.retry , "--range", range, grib_source, append_mode, outFile]
+                    result = subprocess.run(curl_command, shell=True, stderr=subprocess.PIPE, text=True)
+                    if result.returncode != 0:
+                        log.error(f"Le téléchargement a échoué avec le code de statut : {result.returncode}")
+                        log.error(f"Erreur curl : {result.stderr}")
                     else:
-                        log.error(f"Le téléchargement a échoué avec le code de statut : {response.status_code}")
+                        if verbose:
+                            print(f"Téléchargement réussi pour le groupe {i}")
                 except requests.exceptions.RequestException as e:
+                    log.error(f"Le téléchargement a échoué. Exception : {e}")
+                except subprocess.CalledProcessError as e:
                     log.error(f"Le téléchargement a échoué. Exception : {e}")
                 except Exception as e:
                     log.error(f"Le téléchargement a échoué. Traceback : {e}")
